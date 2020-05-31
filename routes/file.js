@@ -18,5 +18,8 @@ let storage = multer.diskStorage({
 
 Router.post("/upload", multer({storage}).array("files"), files.upload)
 Router.post("/makefolder", files.folderMake)
+Router.post("/explore", files.explore)
+Router.post("/delete", files.deleteFiles)
+Router.post("/rename", files.rename)
 
 module.exports = Router

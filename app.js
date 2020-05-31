@@ -1,6 +1,6 @@
 const express = require("express")
 const cors = require("cors")
-// const bp = require("body-parser")
+const bp = require("body-parser")
 const fs = require("fs")
 const app = express()
 const files = require("./routes/file")
@@ -15,11 +15,11 @@ fs.exists("./store", async e => {
     }
 })
 
-console.log(fs.readdirSync("."))
+// console.log(fs.readdirSync("."))
 
 
 app.use(cors())
-//app.use(bp.json())
+app.use(bp())
 
 app.use("/files", files)
 

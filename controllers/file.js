@@ -11,7 +11,7 @@ module.exports = {
 
     folderMake: (req, res) => {
 
-        fs.mkdir(config.rootFolder+ "/" + req.body.folder, err => {
+        fs.mkdir(config.rootFolder+ "/" + req.body.folder+"/" + req.body.newFolder, err => {
             if(err) res.sendStatus(500)
             res.sendStatus(200)
         })
@@ -19,6 +19,8 @@ module.exports = {
     },
 
     deleteFiles: (req, res) => {
+
+        console.log(req.body)
 
         let files = [...req.body.files]
 
@@ -35,8 +37,8 @@ module.exports = {
     rename: (req, res) => {
 
         fs.rename(config.rootFolder+"/"+req.body.folder, config.rootFolder+"/"+req.body.newFolder, err => {
-            if(err) res.sendStatus(500)
-            res.sendStatus(200)
+            if(err) console.log(err, req.body)
+            // res.sendStatus(200)
         })
 
     },
