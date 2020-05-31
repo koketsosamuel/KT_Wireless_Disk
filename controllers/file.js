@@ -18,13 +18,6 @@ module.exports = {
 
     },
 
-    folderRem: (req, res) => {
-        fs.remove(config.rootFolder+"/"+req.body.folder, err => {
-            if (err) res.sendStatus(500)
-            res.sendStatus(200)
-        })
-    },
-
     deleteFiles: (req, res) => {
 
         let files = [...req.body.files]
@@ -66,9 +59,9 @@ module.exports = {
                 let unit = source+"/"+items[i]
 
                 if(fs.statSync(unit).isDirectory()) {
-                    dirs.push({type: folder, dir: items[i]})
+                    dirs.push({type: "folder", dir: req.body.folder+"/"+items[i]})
                 } else {
-                    dirs.push({type: files, dir: items[i]})
+                    dirs.push({type: "file", dir: req.body.folder+"/"+items[i]})
                 }
 
             }
@@ -77,6 +70,8 @@ module.exports = {
 
         })
 
-    }
+    },
+
+
 
 }
