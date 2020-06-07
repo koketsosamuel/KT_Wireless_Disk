@@ -1,5 +1,5 @@
 module.exports = {
 
-    rootFolder: "./store"
+    rootDir: "./store"
 
 }

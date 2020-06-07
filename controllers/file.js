@@ -11,21 +11,28 @@ module.exports = {
 
     folderMake: (req, res) => {
 
-        fs.mkdir(config.rootFolder+ "/" + req.body.folder+"/" + req.body.newFolder, err => {
+        fs.mkdir(config.rootFolder+ "/" + req.body.dir+"/" + req.body.newDir, err => {
             if(err) res.sendStatus(500)
             res.sendStatus(200)
         })
 
     },
 
-    deleteFiles: (req, res) => {
+    /**
+     * delete directories
+     * @param req Object
+     * route: /file/delete
+     * input: dir{String}
+     * res: fail{400} success{200}
+     */
+    deleteDirs: (req, res) => {
 
         console.log(req.body)
 
-        let files = [...req.body.files]
+        let dirs = [...req.body.dirs]
 
-        for(let i = 0; i < files.length; i++) {
-            fs.remove(config.rootFolder+"/"+files[i], err => {
+        for(let i = 0; i < dirs.length; i++) {
+            fs.remove(config.rootFolder+"/"+dirs[i], err => {
                 if(err) res.sendStatus(500)
             })
         }
@@ -36,9 +43,9 @@ module.exports = {
 
     rename: (req, res) => {
 
-        fs.rename(config.rootFolder+"/"+req.body.folder, config.rootFolder+"/"+req.body.newFolder, err => {
-            if(err) console.log(err, req.body)
-            // res.sendStatus(200)
+        fs.rename(config.rootFolder+"/"+req.body.dir, config.rootFolder+"/"+req.body.newDir, err => {
+            if(err) sendStatus(400)
+            res.sendStatus(200)
         })
 
     },
@@ -48,7 +55,7 @@ module.exports = {
         let items = []
         let dirs = []
 
-        let source = config.rootFolder+"/"+req.body.folder
+        let source = config.rootFolder+"/"+req.body.dir
 
         fs.readdir(source, (err, files) => {
 
@@ -61,9 +68,9 @@ module.exports = {
                 let unit = source+"/"+items[i]
 
                 if(fs.statSync(unit).isDirectory()) {
-                    dirs.push({type: "folder", dir: req.body.folder+"/"+items[i]})
+                    dirs.push({type: "folder", dir: req.body.dir+"/"+items[i]})
                 } else {
-                    dirs.push({type: "file", dir: req.body.folder+"/"+items[i]})
+                    dirs.push({type: "file", dir: req.body.dir+"/"+items[i]})
                 }
 
             }
@@ -74,6 +81,26 @@ module.exports = {
 
     },
 
+    copy: (req, res) => {
+
+        fs.copy(config.rootDir + "/" + req.body.dir, config.rootDir + "/" + req.body.newDir+"/"+req.body.dir, err => {
+            if(err) res.sendStatus(400)
+            res.sendStatus(200)
+        })
+
+    },
+
+    move: (req, res) => {
+
+        fs.move(config.rootDir + "/" + req.body.dir, config.rootDir + "/" + req.body.newDir+"/"+req.body.dir, err => {
+            if(err) {
+                console.error(err)
+                res.sendStatus(400)
+            }
+            res.sendStatus(200)
+        })
+
+    },
 
 
 }
