@@ -5,15 +5,15 @@ module.exports = {
 
     upload: (req, res) => {
 
-        res.sendStatus(200)
+        res.json({})
 
     },
 
     folderMake: (req, res) => {
 
-        fs.mkdir(config.rootFolder+ "/" + req.body.dir+"/" + req.body.newDir, err => {
-            if(err) res.sendStatus(500)
-            res.sendStatus(200)
+        fs.mkdir(config.rootDir+ "/" + req.body.dir+"/" + req.body.newDir, err => {
+            if(err) res.json({error: true})
+            res.json({})
         })
 
     },
@@ -32,20 +32,20 @@ module.exports = {
         let dirs = [...req.body.dirs]
 
         for(let i = 0; i < dirs.length; i++) {
-            fs.remove(config.rootFolder+"/"+dirs[i], err => {
-                if(err) res.sendStatus(500)
+            fs.remove(config.rootDir+"/"+dirs[i], err => {
+                if(err) res.json({error: true})
             })
         }
 
-        res.sendStatus(200)
+        res.json({})
 
     },
 
     rename: (req, res) => {
 
-        fs.rename(config.rootFolder+"/"+req.body.dir, config.rootFolder+"/"+req.body.newDir, err => {
-            if(err) sendStatus(400)
-            res.sendStatus(200)
+        fs.rename(config.rootDir+"/"+req.body.dir, config.rootDir+"/"+req.body.newDir, err => {
+            if(err) res.json({error: true})
+            res.json({})
         })
 
     },
@@ -55,27 +55,41 @@ module.exports = {
         let items = []
         let dirs = []
 
-        let source = config.rootFolder+"/"+req.body.dir
+        let source = config.rootDir+"/"+req.body.dir
 
         fs.readdir(source, (err, files) => {
 
-            if(err) res.sendStatus(500)
+            try {
 
-            items = [...files]
-
-            for(let i = 0; i < items.length; i++) {
-
-                let unit = source+"/"+items[i]
-
-                if(fs.statSync(unit).isDirectory()) {
-                    dirs.push({type: "folder", dir: req.body.dir+"/"+items[i]})
+                if(err) {
+                    res.json({error: true})
+                    console.log(err)
                 } else {
-                    dirs.push({type: "file", dir: req.body.dir+"/"+items[i]})
+                    if(files == undefined) {
+                        files = []
+                    }
+    
+                    items = files
+    
+                    for(let i = 0; i < items.length; i++) {
+    
+                        let unit = source+"/"+items[i]
+    
+                        if(fs.statSync(unit).isDirectory()) {
+                            dirs.push({type: "folder", name: items[i], dir: req.body.dir+"/"+items[i]})
+                        } else {
+                            dirs.push({type: "file", name: items[i], dir: req.body.dir+"/"+items[i]})
+                        }
+    
+                    }
+    
+                    res.json({list: dirs})
                 }
 
+            } catch(err) {
+                console.log(err)
+                res.json({error: true})
             }
-
-            res.json({list: dirs})
 
         })
 
@@ -84,8 +98,8 @@ module.exports = {
     copy: (req, res) => {
 
         fs.copy(config.rootDir + "/" + req.body.dir, config.rootDir + "/" + req.body.newDir+"/"+req.body.dir, err => {
-            if(err) res.sendStatus(400)
-            res.sendStatus(200)
+            if(err) res.json({error: true})
+            res.json({})
         })
 
     },
@@ -95,9 +109,9 @@ module.exports = {
         fs.move(config.rootDir + "/" + req.body.dir, config.rootDir + "/" + req.body.newDir+"/"+req.body.dir, err => {
             if(err) {
                 console.error(err)
-                res.sendStatus(400)
+                res.json({error: true})
             }
-            res.sendStatus(200)
+            res.json({})
         })
 
     },

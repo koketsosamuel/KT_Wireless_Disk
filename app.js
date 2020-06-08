@@ -19,7 +19,7 @@ fs.exists("./store", async e => {
 
 
 app.use(cors())
-app.use(bp())
+app.use(bp.json())
 
 app.use("/files", files)
 
