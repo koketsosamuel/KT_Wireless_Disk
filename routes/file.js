@@ -6,7 +6,7 @@ const fs =require("fs")
 
 let storage = multer.diskStorage({
     destination:async function (req, file, cb) {
-        let folder = String('store/'+req.body.folder)
+        let folder = String('store/'+req.body.dir)
         let exist = await fs.existsSync(folder)
         if(!exist) fs.mkdirSync(folder)
         cb(null, folder)
@@ -16,10 +16,17 @@ let storage = multer.diskStorage({
     }
 })
 
+// dir: string of the directory to upload to
 Router.post("/upload", multer({storage}).array("files"), files.upload)
+
+// dir: string of the current directory | newDir: name of the new folder
 Router.post("/makefolder", files.folderMake)
+
+// dir: directory to explore
 Router.post("/explore", files.explore)
-Router.post("/delete", files.deleteDirs)
+
+
+Router.post("/delete", files.deleteDir)
 Router.post("/rename", files.rename)
 Router.post("/copy", files.copy)
 Router.post("/move", files.move)

@@ -12,8 +12,11 @@ module.exports = {
     folderMake: (req, res) => {
 
         fs.mkdir(config.rootDir+ "/" + req.body.dir+"/" + req.body.newDir, err => {
-            if(err) res.json({error: true})
-            res.json({})
+            if(err) {
+                res.json({error: true})
+            } else {
+                res.json({})
+            }
         })
 
     },
@@ -25,17 +28,13 @@ module.exports = {
      * input: dir{String}
      * res: fail{400} success{200}
      */
-    deleteDirs: (req, res) => {
+    deleteDir: (req, res) => {
 
-        console.log(req.body)
+        let dirs = req.body.dir
 
-        let dirs = [...req.body.dirs]
-
-        for(let i = 0; i < dirs.length; i++) {
-            fs.remove(config.rootDir+"/"+dirs[i], err => {
-                if(err) res.json({error: true})
-            })
-        }
+        fs.remove(config.rootDir+"/"+dirs, err => {
+            if(err) res.json({error: true})
+        })        
 
         res.json({})
 
@@ -75,19 +74,20 @@ module.exports = {
     
                         let unit = source+"/"+items[i]
     
-                        if(fs.statSync(unit).isDirectory()) {
-                            dirs.push({type: "folder", name: items[i], dir: req.body.dir+"/"+items[i]})
+                        if(!fs.statSync(unit).isFile()) {
+                            dirs = [...dirs, `{"name": "${items[i]}", "dir": "${req.body.dir+"/"+items[i]}", "folder":true}`]
                         } else {
-                            dirs.push({type: "file", name: items[i], dir: req.body.dir+"/"+items[i]})
+                            dirs = [...dirs, `{"name": "${items[i]}", "dir": "${req.body.dir+"/"+items[i]}", "folder":false}`]
                         }
     
                     }
     
-                    res.json({list: dirs})
+                    res.json({dirs: dirs})
+                    
                 }
 
             } catch(err) {
-                console.log(err)
+                console.error(err)
                 res.json({error: true})
             }
 
